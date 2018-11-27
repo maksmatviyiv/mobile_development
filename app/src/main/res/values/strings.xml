@@ -12,4 +12,6 @@
     <string name="pass">Password</string>
     <string name="confPass">Confirm Password</string>
 
+    <!-- Labwork4 string -->
+    <string name="list_view_info">View List</string>
 </resources>
