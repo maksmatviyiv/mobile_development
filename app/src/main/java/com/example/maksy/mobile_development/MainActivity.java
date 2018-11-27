@@ -1,57 +1,104 @@
 package com.example.maksy.mobile_development;
 
+import android.app.ProgressDialog;
+import android.support.annotation.NonNull;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.maksy.mobile_development.adapter.CustomAdapter;
+import com.example.maksy.mobile_development.model.Photo;
+import com.example.maksy.mobile_development.network.Api;
+import com.example.maksy.mobile_development.network.ApiClient;
+
+import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
-    ListView listView;
+    @BindView(R.id.recycler_view)
+    RecyclerView mRecyclerView;
+    @BindView(R.id.no_data)
+    TextView mNoDataText;
+    CustomAdapter mAdapter;
+    @BindView(R.id.pull_refresh)
+    SwipeRefreshLayout mSwipeRefreshLayout;
+    ProgressDialog mProgressDialog;
+    private List<Photo> mDataList = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        listView = findViewById(R.id.list_view_author_photo);
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Api.Base_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        Api api = retrofit.create(Api.class);
-
-        Call<List<Photo>> call = api.getPhoto();
+        ButterKnife.bind(this);
+        mProgressDialog = new ProgressDialog(MainActivity.this);
+        mProgressDialog.setMessage(getString(R.string.loading));
+        mProgressDialog.show();
+        initRecyclerView();
+        makeCall();
+    }
+    public void makeCall() {
+        Api api = ApiClient.getRetrofitInstance().create(Api.class);
+        Call<List<Photo>> call = api.getPhotos();
         call.enqueue(new Callback<List<Photo>>() {
+
             @Override
-            public void onResponse(Call<List<Photo>> call, Response<List<Photo>> response) {
-                List<Photo> authorPhoto = response.body();
+            public void onResponse(@NonNull Call<List<Photo>> call, @NonNull Response<List<Photo>> response) {
 
-                for (Photo a : authorPhoto){
-                    List<Photo> authorList = response.body();
-                    Log.d("name", a.getAuthor());
-
-                    String[] author = new String[authorList.size()];
-
-                    for (int i = 0; i < authorList.size(); i++) {
-                        author[i] = authorList.get(i).getAuthor();
-                    }
-                    listView.setAdapter(new ArrayAdapter(getApplicationContext(),
-                                                       android.R.layout.simple_list_item_1, author));
+                if(response.isSuccessful()) {
+                    mProgressDialog.dismiss();
+                    mDataList = response.body();
+                    display();
+                }
+                else {
+                    Toast.makeText(MainActivity.this, R.string.error,
+                            Toast.LENGTH_LONG).show();
                 }
             }
+
             @Override
-            public void onFailure(Call<List<Photo>> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+            public void onFailure(@NonNull Call<List<Photo>> call, @NonNull Throwable t) {
+                mProgressDialog.dismiss();
+                Toast.makeText(MainActivity.this, R.string.on_failure,
+                        Toast.LENGTH_LONG).show();
+                noData();
+            }
+        });
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                makeCall();
+                mSwipeRefreshLayout.setRefreshing(false);
             }
         });
     }
-}
 
+    private void initRecyclerView() {
+        mAdapter = new CustomAdapter();
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setAdapter(mAdapter);
+        mNoDataText.setVisibility(View.INVISIBLE);
+    }
+
+    private void display() {
+        mAdapter.loadData(mDataList);
+        mAdapter.notifyDataSetChanged();
+        mNoDataText.setVisibility(View.INVISIBLE);
+    }
+    private void noData() {
+        mNoDataText.setVisibility(View.VISIBLE);
+        mAdapter.notifyDataSetChanged();
+        mRecyclerView.setVisibility(View.INVISIBLE);
+
+    }
+}
