@@ -1,6 +1,7 @@
 package com.example.maksy.mobile_development.network;
 
-import com.example.maksy.mobile_development.model.Photo;
+import com.example.maksy.mobile_development.entity.Photo;
+
 
 import java.util.List;
 

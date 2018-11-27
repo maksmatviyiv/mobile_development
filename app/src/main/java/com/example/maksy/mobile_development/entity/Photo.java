@@ -1,4 +1,4 @@
-package com.example.maksy.mobile_development.model;
+package com.example.maksy.mobile_development.entity;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -12,12 +12,12 @@ public class Photo {
         mTitle = title;
         mThumbnailUrl = thumbnailUrl;
     }
+
     public String getTitle() {
         return mTitle;
     }
+
     public String getThumbnailUrl() {
         return mThumbnailUrl;
     }
 }
-
-
