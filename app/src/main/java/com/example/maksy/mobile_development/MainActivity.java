@@ -11,15 +11,18 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.example.maksy.mobile_development.fragments.FavouriteFragment;
-import com.example.maksy.mobile_development.fragments.ListFragment;
+import com.example.maksy.mobile_development.favourite.FavouriteFragment;
+import com.example.maksy.mobile_development.list.ListFragment;
+import com.example.maksy.mobile_development.navigation.FragmentNavigation;
 
 public class MainActivity extends AppCompatActivity {
+    FragmentNavigation fragmentNavigation;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        swapFragments(ListFragment.newInstance());
+        fragmentNavigation = new FragmentNavigation(getSupportFragmentManager());
+        fragmentNavigation.swapFragments(ListFragment.newInstance());
 
     }
 
@@ -42,14 +45,8 @@ public class MainActivity extends AppCompatActivity {
                 fragment = FavouriteFragment.newInstance();
                 break;
         }
-        swapFragments(fragment);
+        fragmentNavigation.swapFragments(fragment);
         return false;
     }
-    public void swapFragments(final Fragment fragment) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_replace, fragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-    }
+
 }
