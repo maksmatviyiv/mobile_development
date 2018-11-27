@@ -12,12 +12,17 @@
     <string name="pass">Password</string>
     <string name="confPass">Confirm Password</string>
 
-    <!-- Labwork4 string -->
     <string name="list_view_info">View List</string>
-    <!-- Labwork6 string -->
-    <string name="loading">Loading&#8230;)</string>
-    <string name="on_failure">Something went wrong&#8230;)Please try later!</string>
-    <string name="no_data">No data</string>
+    <string name="home">Home</string>
+    <string name="favorites">Favorites</string>
+    <string name="error">Error</string>
     <string name="photo">Photo</string>
-    <string name="error">Error 404</string>
+    <string name="no_data">No data</string>
+    <string name="loading">Loading</string>
+    <string name="on_failure">Check internet connection</string>
+    <string name="text">Text</string>
+
+    <!-- Labwork 7 strings-->
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
 </resources>

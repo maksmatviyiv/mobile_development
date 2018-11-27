@@ -1,6 +1,8 @@
 package com.example.maksy.mobile_development.adapter;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.maksy.mobile_development.R;
+import com.example.maksy.mobile_development.fragments.DetailFragment;
 import com.example.maksy.mobile_development.model.Photo;
 import com.squareup.picasso.Picasso;
 
@@ -20,7 +23,12 @@ import butterknife.ButterKnife;
 
 public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomViewHolder>{
 
+    private FragmentManager fragmentManager;
     private List<Photo> mDataList;
+    public CustomAdapter(FragmentManager fragmentManager) {
+
+        this.fragmentManager = fragmentManager;
+    }
     public void loadData(List<Photo> mDataList){
         this.mDataList = mDataList;
     }
@@ -34,6 +42,24 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomView
         CustomViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        Photo photo = mDataList.get(position);
+                        Bundle data = new Bundle();
+                        data.putString("title", photo.getTitle());
+                        data.putString("url", photo.getThumbnailUrl());
+                        DetailFragment listItemFragment = new DetailFragment();
+                        listItemFragment.setArguments(data);
+                        fragmentManager.beginTransaction()
+                                .replace(R.id.fragment_replace, listItemFragment)
+                                .addToBackStack(null)
+                                .commit();
+                    }
+                }
+            });
         }
     }
     @NonNull
