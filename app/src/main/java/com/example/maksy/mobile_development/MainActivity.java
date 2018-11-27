@@ -1,104 +1,55 @@
 package com.example.maksy.mobile_development;
 
-import android.app.ProgressDialog;
-import android.support.annotation.NonNull;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
+
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 
-import com.example.maksy.mobile_development.adapter.CustomAdapter;
-import com.example.maksy.mobile_development.model.Photo;
-import com.example.maksy.mobile_development.network.Api;
-import com.example.maksy.mobile_development.network.ApiClient;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import com.example.maksy.mobile_development.fragments.FavouriteFragment;
+import com.example.maksy.mobile_development.fragments.ListFragment;
 
 public class MainActivity extends AppCompatActivity {
-    @BindView(R.id.recycler_view)
-    RecyclerView mRecyclerView;
-    @BindView(R.id.no_data)
-    TextView mNoDataText;
-    CustomAdapter mAdapter;
-    @BindView(R.id.pull_refresh)
-    SwipeRefreshLayout mSwipeRefreshLayout;
-    ProgressDialog mProgressDialog;
-    private List<Photo> mDataList = new ArrayList<>();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
-        mProgressDialog = new ProgressDialog(MainActivity.this);
-        mProgressDialog.setMessage(getString(R.string.loading));
-        mProgressDialog.show();
-        initRecyclerView();
-        makeCall();
-    }
-    public void makeCall() {
-        Api api = ApiClient.getRetrofitInstance().create(Api.class);
-        Call<List<Photo>> call = api.getPhotos();
-        call.enqueue(new Callback<List<Photo>>() {
+        swapFragments(ListFragment.newInstance());
 
-            @Override
-            public void onResponse(@NonNull Call<List<Photo>> call, @NonNull Response<List<Photo>> response) {
-
-                if(response.isSuccessful()) {
-                    mProgressDialog.dismiss();
-                    mDataList = response.body();
-                    display();
-                }
-                else {
-                    Toast.makeText(MainActivity.this, R.string.error,
-                            Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<List<Photo>> call, @NonNull Throwable t) {
-                mProgressDialog.dismiss();
-                Toast.makeText(MainActivity.this, R.string.on_failure,
-                        Toast.LENGTH_LONG).show();
-                noData();
-            }
-        });
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                makeCall();
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
-        });
     }
 
-    private void initRecyclerView() {
-        mAdapter = new CustomAdapter();
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setAdapter(mAdapter);
-        mNoDataText.setVisibility(View.INVISIBLE);
-    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
 
-    private void display() {
-        mAdapter.loadData(mDataList);
-        mAdapter.notifyDataSetChanged();
-        mNoDataText.setVisibility(View.INVISIBLE);
     }
-    private void noData() {
-        mNoDataText.setVisibility(View.VISIBLE);
-        mAdapter.notifyDataSetChanged();
-        mRecyclerView.setVisibility(View.INVISIBLE);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Fragment fragment = null;
+        switch (item.getItemId()) {
 
+            case R.id.home:
+                fragment = ListFragment.newInstance();
+                break;
+            case R.id.favorites:
+                fragment = FavouriteFragment.newInstance();
+                break;
+        }
+        swapFragments(fragment);
+        return false;
+    }
+    public void swapFragments(final Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_replace, fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 }
