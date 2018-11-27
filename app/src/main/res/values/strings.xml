@@ -14,4 +14,10 @@
 
     <!-- Labwork4 string -->
     <string name="list_view_info">View List</string>
+    <!-- Labwork6 string -->
+    <string name="loading">Loading&#8230;)</string>
+    <string name="on_failure">Something went wrong&#8230;)Please try later!</string>
+    <string name="no_data">No data</string>
+    <string name="photo">Photo</string>
+    <string name="error">Error 404</string>
 </resources>
