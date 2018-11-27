@@ -3,4 +3,13 @@
     <string name="empty_text"></string>
     <string name="say_hello">Hello</string>
     <string name="clear">Clear</string>
+    <!-- Labwork3 string -->
+    <string name="button">Sign UP</string>
+    <string name ="lastName">Last Name</string>
+    <string name="firstName">First Name</string>
+    <string name="phone">Phone</string>
+    <string name="email">Email</string>
+    <string name="pass">Password</string>
+    <string name="confPass">Confirm Password</string>
+
 </resources>
